@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="zh-TW">
+<html dir="ltr" lang="{{ $locale }}">
 <head>
   <title>{{ $title ?? 'Admin'}}</title>
   <meta charset="UTF-8" />
-  <base href="{{ $base ?? ''}}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
   {{-- 全站通用套件 --}}
   <link type="text/css" rel="stylesheet" href="{{ asset('opencartassets/css/bootstrap.css') }}" />

@@ -8,6 +8,7 @@ use Auth;
 
 class LoginController extends Controller
 {
+
     public function __construct()
     {
         $this->middleware('guest:admin', ['except' => ['logout']]);
@@ -15,7 +16,6 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        echo "<pre>", print_r(123, 1), "</pre>"; exit;
         return view('admin.login');
     }
 
@@ -42,8 +42,7 @@ class LoginController extends Controller
 
     public function logout()
     {
-        echo "<pre>", print_r(123, 1), "</pre>"; exit;
         Auth::guard('admin')->logout();
-        return redirect('/admin/login');
+        return redirect(route('lang.admin.login'));
     }
 }

@@ -12,8 +12,8 @@
               <h1 class="panel-title"><i class="fa fa-lock"></i>請輸入管理帳號及密碼。</h1>
             </div>
             <div class="panel-body">
-              <form action="{{ route('admin.login.submit') }}" method="post" enctype="multipart/form-data">
-
+              <form action="{{ route('lang.admin.login.post') }}" method="post" enctype="multipart/form-data">
+                @csrf
                 <div class="form-group">
                   <label for="input-username">管理帳號：</label>
                   <div class="input-group">
@@ -27,7 +27,7 @@
                     <span class="input-group-addon"><i class="fa fa-lock"></i></span>
                     <input type="password" name="password" value="" placeholder="管理密碼：" id="input-password" class="form-control" />
                   </div>
-                  <span class="help-block"><a href="{{ route('admin.password.request') }}">忘記密碼</a></span>
+                  <span class="help-block"><a href="{{ route('lang.admin.password.request') }}">忘記密碼</a></span>
                 </div>
                 <div class="text-right">
                   <button type="submit" class="btn btn-primary"><i class="fa fa-key"></i>登入</button>

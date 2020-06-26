@@ -38,6 +38,7 @@ class AdminComposer
     // }
 
     //$view->with('adminUser', Auth::user());
-    $view->with('base', config('app.url'));
+    $view->with('base', config('app.url').'/admin');
+    $view->with('locale', $locale);
   }
 }

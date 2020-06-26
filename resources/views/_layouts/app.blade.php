@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="zh-CN">
+<html dir="ltr" lang="{{ $locale }}">
 <head>
   <title>{{ $langs->site_name }}</title>
   <meta charset="UTF-8" />

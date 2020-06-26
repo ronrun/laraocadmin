@@ -41,7 +41,6 @@ class WebComposer
     $view->with('authUser', $this->authUser);
     $view->with('base', config('app.url'));
     $view->with('locale', $locale);
-    $view->with('webComposerTest', 'webComposerTest');
 
     //Language
     /*

@@ -18,27 +18,14 @@
         <span>Setting</span></a>
       <ul>
         <li>
-          <a class="parent">Auth</a>
+          <a class="parent">Users</a>
           <ul>
-            <li>
-              <a href="">Administrators</a></li>
-            <li>
-              <a href="">Role</a></li>
+            <li><a href="{{ url($locale.'/admin/user/permission') }}">Permissions</a></li>
+            <li><a href="{{ url($locale.'/admin/user/role') }}">Roles</a></li>
+            <li><a href="{{ url($locale.'/admin/user/user') }}">Administrators</a></li>
           </ul>
         </li>
       </ul>
     </li>
-    
-    {{--
-    <li id="menu-user">
-      <a class="parent">
-        <i class="fa fa-tags fw"></i>
-        <span>會員管理</span></a>
-      <ul>
-        <li><a href="{{ route('lang.admin.user.index') }}">帳號</a></li>
-      </ul>
-    </li>
-    --}}
-
   </ul>
 </nav>

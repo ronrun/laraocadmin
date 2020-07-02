@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
-class ComposerServiceProvider extends ServiceProvider
+class ViewServiceProvider extends ServiceProvider
 {
     /**
      * Register bindings in the container.
@@ -14,12 +14,7 @@ class ComposerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Using class based composers...
-        View::composer(
-            '_partials.profileRight', 'App\Http\View\Composers\WebComposer'
-        );
-
-        View::composer('admin._layouts.app', 'App\Http\View\Composers\AdminComposer');
+        View::composer('admin.*', 'App\Http\View\Composers\AdminComposer');
     }
 
     /**

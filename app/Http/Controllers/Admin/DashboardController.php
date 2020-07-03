@@ -20,6 +20,10 @@ class DashboardController extends Controller
         //Language
         $langs = new \stdClass();
         
+        foreach (Lang::get('admin/common/common') as $key => $value) {
+            $langs->{$key} = $value;
+        }
+        
         foreach (Lang::get('admin/common/column_left') as $key => $value) {
             $langs->{$key} = $value;
         }
@@ -29,6 +33,17 @@ class DashboardController extends Controller
         }
 
         $data['langs'] = $langs;
+
+        //Breadcomb
+        $data['breadcumbs'][] = array(
+            'text' => $langs->text_home,
+            'href' => route('lang.admin.dashboard'),
+        );
+        
+        $data['breadcumbs'][] = array(
+            'text' => $langs->heading_title,
+            'href' => null,
+        );
 
         return view('admin.dashboard', $data);
     }

@@ -10,10 +10,9 @@
           <div class="container-fluid">
             <h1>{{ $langs->heading_title }}</h1>
             <ul class="breadcrumb">
-              <li>
-                <a href="http://www.laraocadmin.local/admin/index.php?route=common/dashboard&amp;token=S0FF6WLaVKGyDJUmAsXcQHKZOZBotxyZ">首頁</a></li>
-              <li>
-                <a href="http://www.laraocadmin.local/admin/index.php?route=common/dashboard&amp;token=S0FF6WLaVKGyDJUmAsXcQHKZOZBotxyZ">Dashboard</a></li>
+              @foreach($breadcumbs as $breadcumb)
+                <li><a href="{{ $breadcumb['href'] }}">{{ $breadcumb['text'] }}</a></li>
+              @endforeach
             </ul>
           </div>
         </div>
@@ -28,7 +27,7 @@
                   <i class="fa fa-shopping-cart"></i>
                   <h2 class="pull-right">0</h2></div>
                 <div class="tile-footer">
-                  <a href="http://www.laraocadmin.local/admin/index.php?route=sale/order&amp;token=S0FF6WLaVKGyDJUmAsXcQHKZOZBotxyZ">View more...</a></div>
+                  <a href="">View more...</a></div>
               </div>
             </div>
 
@@ -40,7 +39,7 @@
                   <i class="fa fa-credit-card"></i>
                   <h2 class="pull-right">0</h2></div>
                 <div class="tile-footer">
-                  <a href="http://www.laraocadmin.local/admin/index.php?route=sale/order&amp;token=S0FF6WLaVKGyDJUmAsXcQHKZOZBotxyZ">View more...</a></div>
+                  <a href="">View more...</a></div>
               </div>
             </div>
 
@@ -52,7 +51,7 @@
                   <i class="fa fa-user"></i>
                   <h2 class="pull-right">0</h2></div>
                 <div class="tile-footer">
-                  <a href="http://www.laraocadmin.local/admin/index.php?route=customer/customer&amp;token=S0FF6WLaVKGyDJUmAsXcQHKZOZBotxyZ">View more...</a></div>
+                  <a href="">View more...</a></div>
               </div>
             </div>
 
@@ -63,7 +62,7 @@
                   <i class="fa fa-users"></i>
                   <h2 class="pull-right">0</h2></div>
                 <div class="tile-footer">
-                  <a href="http://www.laraocadmin.local/admin/index.php?route=report/customer_online&amp;token=S0FF6WLaVKGyDJUmAsXcQHKZOZBotxyZ">View more...</a></div>
+                  <a href="">View more...</a></div>
               </div>
             </div>
 

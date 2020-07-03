@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
+use Lang;
 
 class LoginController extends Controller
 {
@@ -16,7 +17,20 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        return view('admin.login');
+        //Language
+        $langs = new \stdClass();
+        
+        foreach (Lang::get('admin/common/common') as $key => $value) {
+            $langs->{$key} = $value;
+        }
+        
+        foreach (Lang::get('admin/common/login') as $key => $value) {
+            $langs->{$key} = $value;
+        }
+
+        $data['langs'] = $langs;
+
+        return view('admin.login', $data);
     }
 
     public function login(Request $request)

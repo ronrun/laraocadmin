@@ -9,28 +9,28 @@
         <div class="col-sm-offset-4 col-sm-4">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h1 class="panel-title"><i class="fa fa-lock"></i>請輸入管理帳號及密碼。</h1>
+              <h1 class="panel-title"><i class="fa fa-lock"></i>{{ $langs->text_login }}</h1>
             </div>
             <div class="panel-body">
               <form action="{{ route('lang.admin.login.post') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                  <label for="input-username">管理帳號：</label>
+                  <label for="input-username">{{ $langs->entry_username }}</label>
                   <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                    <input type="text" name="username" id="username" value="" placeholder="管理帳號：" id="input-username" class="form-control" />
+                    <input type="text" name="username" id="username" value="" placeholder="{{ $langs->entry_username }}" id="input-username" class="form-control" />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="input-password">管理密碼：</label>
+                  <label for="input-password">{{ $langs->entry_password }}</label>
                   <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                    <input type="password" name="password" value="" placeholder="管理密碼：" id="input-password" class="form-control" />
+                    <input type="password" name="password" value="" placeholder="{{ $langs->entry_password }}" id="input-password" class="form-control" />
                   </div>
-                  <span class="help-block"><a href="{{ route('lang.admin.password.request') }}">忘記密碼</a></span>
+                  <span class="help-block"><a href="{{ route('lang.admin.password.request') }}">{{ $langs->text_forgotten }}</a></span>
                 </div>
                 <div class="text-right">
-                  <button type="submit" class="btn btn-primary"><i class="fa fa-key"></i>登入</button>
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-key"></i>{{ $langs->button_login }}</button>
                 </div>
               </form>
             </div>

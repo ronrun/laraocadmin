@@ -20,7 +20,7 @@ class CreateLanguagesTable extends Migration
             $table->string('locale', 100);
             $table->string('image', 10);
             $table->integer('sort_order');
-            $table->tinyInteger('status');
+            $table->tinyInteger('active');
         });
     }
 

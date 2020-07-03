@@ -27,6 +27,7 @@ class AdminComposer
      */
     public function compose(View $view)
     {
+
         $view->with('base', config('app.url').'/admin');
         $view->with('locale', app()->getLocale());
     }

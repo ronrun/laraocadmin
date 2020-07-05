@@ -17,7 +17,7 @@ class CreateSettingsTable extends Migration
             $table->increments('id');
             $table->string('code', 30);
             $table->string('key');
-            $table->text('value');
+            $table->text('value')->nullable();
             $table->tinyInteger('serialized')->default(0);
             $table->string('remark')->nullable();
         });

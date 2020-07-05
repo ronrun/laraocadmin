@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Models\Auth;
+namespace App\Models\Admin;
 
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-//use App\Notifications\AdminResetPasswordNotification;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
-class Admin extends Authenticatable
+class User extends Authenticatable
 {
     use Notifiable;
+    use HasRoles;
 
     //protected $guard = 'admin';
 
@@ -29,9 +31,4 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    
-    // public function sendPasswordResetNotification($token)
-    // {
-    //     $this->notify(new AdminResetPasswordNotification($token));
-    // }
 }

@@ -4,10 +4,12 @@
   <title>{{ $langs->page_title }}</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  
   {{-- Global Packages --}}
-  <link type="text/css" rel="stylesheet" href="{{ asset('opencartassets/css/bootstrap.css') }}" />
+  <link type="text/css" rel="stylesheet" href="{{ asset('opencartassets/js/bootstrap/css/bootstrap.css') }}" />
   <link type="text/css" rel="stylesheet" href="{{ asset('opencartassets/js/font-awesome/css/font-awesome.min.css') }}" />
+  <link type="text/css" rel="stylesheet" href="{{ asset('opencartassets/js/jquery/datetimepicker/bootstrap-datetimepicker.min.css') }}" media="screen" />
 
   {{-- Page Packages --}}
   @yield('pageCss')

@@ -12,12 +12,17 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        $faker = Faker\Factory::create('en_GB');
+
         DB::statement("TRUNCATE TABLE `users`");
 
         DB::table('users')->insert([
-            'name' => Str::random(10),
-            'email' => 'user@laraocadmin.local',
+            'username' => 'admin',
             'password' => bcrypt('123456'),
+            'name' => $faker->name,
+            'email' => 'admin@laraocadmin.local',
         ]);
+
+        factory(App\Models\Admin\User::class, 50)->create();
     }
 }

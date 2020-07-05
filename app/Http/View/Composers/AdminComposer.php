@@ -3,7 +3,7 @@
 namespace App\Http\View\Composers;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-//use Auth;
+use Auth;
 
 class AdminComposer
 {
@@ -30,5 +30,6 @@ class AdminComposer
 
         $view->with('base', config('app.url').'/admin');
         $view->with('locale', app()->getLocale());
+        $view->with('authUser', Auth::user());
     }
 }

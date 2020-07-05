@@ -34,12 +34,6 @@ class SettingSeeder extends Seeder
 
         DB::table('settings')->insert([
             'code' => 'config',
-            'key' => 'config_name',
-            'value' => 'Lara OCAdmin',
-        ]);
-
-        DB::table('settings')->insert([
-            'code' => 'config',
             'key' => 'config_email',
             'value' => 'contact@laraocadmin.local',
         ]);

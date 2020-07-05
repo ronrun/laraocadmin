@@ -25,6 +25,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        // For laravel-permissions, Super Admin
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('SA') ? true : null;
+        });
     }
 }

@@ -4,21 +4,17 @@ namespace App\Http\Controllers\Admin\User;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\Setting\Users\PermissionService;
-use App\Services\Setting\Users\RoleService;
-use App\Services\User\UserService;
+use App\Services\Admin\User\UserService;
+use Validator;
 use Lang;
 
 class UserController extends Controller
 {
 
-    public function __construct(Request $request, UserService $UserService, RoleService $RoleService, PermissionService $PermissionService)
+    public function __construct(Request $request, UserService $UserService)
     {
         $this->request = $request;
         $this->UserService = $UserService;
-        $this->RoleService = $RoleService;
-        $this->PermissionService = $PermissionService;
     }
 
     /**
@@ -38,13 +34,13 @@ class UserController extends Controller
      */
     public function create()
     {
-        $params  = $this->request->query();
-        $queryString = http_build_query($params);
-        $this->to_list_url = route('lang.setting.users.user.index');
-        $this->form_method = 'post';
-        //$this->form_action = url('/'.app()->getLocale().'/setting/user/user/store');
-        $this->form_action = route('lang.setting.users.user.store');
-        return $this->getForm('create', null);
+        $queries = $this->request->query();
+        
+        $this->previous_url     = route('lang.admin.user.user.index', $queries);
+        $this->form_action      = route('lang.admin.user.user.store');
+        $this->form_method      = 'post';
+
+        return $this->getForm('create');
     }
 
     /**
@@ -55,28 +51,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $requests = $this->request->except(['id']);
+        $data = $this->request->all();
 
-        // $validator = $this->validator($requests);
-        // if ($validator->fails()) {
-        //     return redirect()->back()->withInput()->withErrors($validator);
-        // }
-
-        if(!$this->formValidate($this->request)){
-            return redirect()->back()->withInput();
+        $validator = $this->validator($data);
+        if ($validator->fails()) {
+            return redirect()->back()->withInput()->withErrors($validator);
         }
 
-        $row_id = $this->UserService->create($requests);
+        $row_id = $this->UserService->create($data);
 
-        $queries = [];
-
-        foreach ($requests as $key => $val) {
-            if(strpos($key, 'filter_') === 0 ){
-                $queries[$key] = $val;
-            }
-        }
-
-        return redirect()->route('lang.setting.users.user.edit', $row_id)->with(['success' => '已新增']);
+        return redirect()->route('lang.admin.user.user.edit', $row_id)->with(['success' => 'Success']);
     }
 
     /**
@@ -99,9 +83,11 @@ class UserController extends Controller
     public function edit($id)
     {
         $queries = $this->request->query();
-        $this->to_list_url = route('lang.setting.users.user.edit', array_merge([$id], $queries));
-        $this->form_method = 'put';
-        $this->form_action = route('lang.setting.users.user.update', array_merge([$id], $queries));
+
+        $this->previous_url = route('lang.admin.user.user.index', array_merge([$id], $queries));
+        $this->form_action  = route('lang.admin.user.user.update', array_merge([$id], $queries));
+        $this->form_method  = 'put';
+
         return $this->getForm('edit', $id);
     }
 
@@ -114,15 +100,16 @@ class UserController extends Controller
      */
     public function update($id)
     {
-        if(!$this->formValidate($this->request)){
-            return redirect()->back()->withInput();
-        }
+        $data = $this->request->all();
 
-        $data = $this->request->except(['id']);
+        $validator = $this->validator($data);
+        if ($validator->fails()) {
+            return redirect()->back()->withInput()->withErrors($validator);
+        }
 
         $this->UserService->updateById($id, $data);
 
-        return redirect()->back()->with(['success' => '更新成功']);
+        return redirect()->back()->with(['success' => 'Success']);
     }
 
     /**
@@ -137,25 +124,90 @@ class UserController extends Controller
     }
 
 
-    // index(), delete() ... 都會呼叫本函數。
+
     public function getList()
     {
         //Language
-        foreach (Lang::get('common/common') as $key => $value) {
-            $arr[$key] = $value;
+        $langs = new \stdClass();
+
+        foreach (Lang::get('admin/common/common') as $key => $value) {
+            $langs->{$key} = $value;
         }
 
-        foreach (Lang::get('user/user') as $key => $value) {
-            $arr[$key] = $value;
+        foreach (Lang::get('admin/user/user') as $key => $value) {
+            $langs->{$key} = $value;
         }
-        
-        $langs = (object)$arr;
-
-        $data['langs'] = (object)$arr;
 
         $data['heading_title'] = $langs->heading_title;
 
+        $data['langs'] = $langs;
+
         //Breadcomb
+        $data['breadcumbs'][] = array(
+            'text' => $langs->text_home,
+            'href' => route('lang.admin.dashboard'),
+        );
+        
+        $data['breadcumbs'][] = array(
+            'text' => $langs->heading_title,
+            'href' => null,
+        );
+
+        //Get Rows
+        $filter_data = [
+            'filter_username'       => $this->request->query('filter_username', null),
+            'filter_name'           => $this->request->query('filter_name', null),
+            'filter_email'          => $this->request->query('filter_email', null),
+            'filter_active'          => $this->request->query('filter_active', 1),
+            'sort'                  => $this->request->query('sort', 'username'),
+            'order'                 => $this->request->query('order', 'asc'),
+            'limit'                 => $this->request->query('limit', null),
+        ];
+        $rows = $this->UserService->getRows($filter_data);
+
+        foreach ($rows as $row) {
+            $row->url_edit = route('lang.admin.user.user.edit', $row->id);
+            $row->active_string = ($row->active==1) ? 'Y' : 'N';
+        }
+
+        $data['users'] = $rows;
+
+        $data['filter_username']    = $this->request->input('filter_username', null);
+        $data['filter_name']        = $this->request->input('filter_name', null);
+        $data['filter_email']       = $this->request->input('filter_email', null);
+        $data['filter_active']      = $this->request->input('filter_active', null);
+
+        $data['sort'] = $this->request->query('sort', 'username');
+        $data['order'] = ($this->request->query('order')=='asc') ? 'desc' : 'asc';
+        $data['sort_username']      = route('lang.admin.user.user.index', ['sort'=>'username', 'order'=>$data['order']]);
+        $data['sort_name']          = route('lang.admin.user.user.index', ['sort'=>'name', 'order'=>$data['order']]);
+
+        $data['url_create'] = route('lang.admin.user.user.create');
+
+        return view('admin.user.user_list', $data);
+    }
+
+
+    public function getForm($action, $id = null)
+    {
+        //Language
+        $langs = new \stdClass();
+
+        foreach (Lang::get('admin/common/common') as $key => $value) {
+            $langs->{$key} = $value;
+        }
+
+        foreach (Lang::get('admin/user/user') as $key => $value) {
+            $langs->{$key} = $value;
+        }
+
+        $data['heading_title'] = $langs->heading_title;
+
+        $langs->text_form = ($action == 'create') ? $langs->text_add : $langs->text_edit;
+
+        $data['langs'] = $langs;
+
+        //breadcomb
         $data['breadcumbs'][] = array(
             'text' => $langs->text_home,
             'href' => route('lang.home'),
@@ -166,139 +218,15 @@ class UserController extends Controller
             'href' => null,
         );
 
+        // Record
+        $row = $this->UserService->findIdOrNew($id);
+        $data['user'] = $row;
 
-        $urlParameters = $this->request->query();
-
-        $query = User::whereRaw('1=1');
-
-        //從網址參數預先取得本次資料列排序邏輯。
-        $sort = $this->request->query('sort', 'id');
-        $order = $this->request->query('order', 'DESC');
-
-        //用於資料表格的欄位名稱，標記某欄排序，呈現正反序符號。
-        if (isset($this->request->sort)) {
-            $data['sort'] = $this->request->query('sort');
-        } else {
-            $data['sort'] = 'id';
-        }
-
-        if (isset($this->request->order)) {
-            $data['order'] = $this->request->query('order');
-        } else {
-            $data['order'] = 'DESC';
-        }
-
-        $arrFilters = ['username', 'name', 'email'];
-
-        foreach ($arrFilters as $field) {
-            $key = 'filter_' . $field;
-            if(null !== $this->request->query($key)){
-                $value = $this->request->query($key);
-                $value = str_replace('*', '%', $value);
-                $query->where($field, 'like', $value);
-            } 
-        }
-
-        $query->orderBy($sort, $order);
-
-        $rows = $query->paginate(10);
-
-        foreach ($rows as $row) {
-            $row->url_edit = route('lang.setting.users.user.edit', $row->id);
-        }
-
-        $data['users'] = $rows;
-
-        if($data['order'] == 'ASC'){
-            $url_order = 'DESC';
-        }else{
-            $url_order = 'ASC';
-        }
-
-        //資料列排序
-        $data['sort_id'] = route('lang.setting.users.user.index', ['sort'=>'id', 'order'=>$url_order]);
-        $data['sort_username'] = route('lang.setting.users.user.index', ['sort'=>'username', 'order'=>$url_order]);
-        $data['sort_name'] = route('lang.setting.users.user.index', ['sort'=>'name', 'order'=>$url_order]);
-        $data['sort_email'] = route('lang.setting.users.user.index', ['sort'=>'email', 'order'=>$url_order]);
-
-        //網址搜尋參數
-        $data['filter_name'] = $this->request->input('filter_name', null);
-        $data['filter_username'] = $this->request->input('filter_username', null);
-        $data['filter_email'] = $this->request->input('filter_email', null);
-        $data['filter_status'] = $this->request->input('filter_status', null);
-        $data['sort'] = $sort;
-        $data['order'] = $order;
-
-        //表單
-        $data['url_create'] = route('lang.setting.users.user.create');
-
-
-        return view('setting.users.user_list', $data);
-
-    }
-
-
-    public function getForm($action, $id = null)
-    {
-
-        //Language
-        foreach (Lang::get('common/common') as $key => $value) {
-            $arr[$key] = $value;
-        }
-
-        foreach (Lang::get('user/user') as $key => $value) {
-            $arr[$key] = $value;
-        }
-
-        $arr['text_form'] = !isset($id) ? $arr['text_add'] : $arr['text_edit'];
-        
-        $langs = (object)$arr;
-
-        $data['langs'] = (object)$arr;
-
-        //breadcomb
-        $data['breadcumbs'][] = array(
-            'text' => $langs->text_home,
-            'href' => route('lang.home'),
-        );
-        
-        $data['breadcumbs'][] = array(
-            'text' => $langs->heading_title,
-            'href' => url('/'.app()->getLocale().'/programs/p0001'),
-        );
-
-        $queries  = $this->request->query();
-        $queryString = http_build_query($queries);
-
-        // User
-        $user = $this->UserService->findIdOrNew($id);
-        $data['user'] = $user;
-
-        $data['to_list_url'] = $this->to_list_url;
+        $data['previous_url'] = $this->previous_url;
         $data['form_action'] = $this->form_action;
         $data['form_method'] = $this->form_method;
 
-        return view('setting.users.user_form', $data);
-    }
-
-
-    public function formValidate()
-    {
-        try {
-            $this->validate($this->request, [
-                'name' => 'required|regex:/^[\w\s\-]+$/u|min:2|max:20',
-                'password' => 'sometimes|nullable|min:6|max:20',
-                'email' => 'sometimes|nullable|email',
-            ], [
-                'name.*' => '請輸入姓名，長度在 2 至 20 位字元之間',
-                'password.*' => '密碼長度在 6 至 20 位字元之間',
-                'email.*' => '請輸入有效郵件地址',
-            ]);
-
-            return true;
-        }catch(\Illuminate\Foundation\Validation\ValidationException $e){
-            return false;
-        }    
+        return view('admin.user.user_form', $data);
     }
 
     public function autocomplete()
@@ -309,21 +237,11 @@ class UserController extends Controller
             return false;
         }
 
-        if(isset($this->request->filter_code) && mb_strlen($this->request->filter_code, 'utf-8') < 3){
-            return false;
-        }
-
-        if(!isset($this->request->filter_code) && !isset($this->request->filter_name)){
-            return false;
-        }
-
         $filter_data = array(
-            'filter_name'   => '*'.$this->request->filter_name.'*',
-            'filter_code'   => '*'.$this->request->filter_code.'*',
-            'filter_status'   => 'Y',
+            'filter_name'   => $this->request->filter_name,
+            'filter_active'   => 1,
             'sort'          => 'name',
             'order'         => 'ASC',
-            'start'         => 0,
             'limit'         => 10
         );
 
@@ -356,39 +274,22 @@ class UserController extends Controller
         return response(json_encode($json))->header('Content-Type','application/json');
     }
 
-    public function department_autocomplete()
+
+    public function validator(array $data)
     {
-        $json = [];
+        //Language
+        $langs = new \stdClass();
 
-        if(!isset($this->request->filter_name) || mb_strlen('$this->request->filter_name', 'utf-8') < 2){
-            return false;
+        foreach (Lang::get('admin/user/user') as $key => $value) {
+            $langs->{$key} = $value;
         }
 
-        $filter_data = array(
-            'filter_name'   => '*'.$this->request->filter_name.'*',
-            'filter_status'   => 'Y',
-            'sort'          => 'GEM02',
-            'order'         => 'ASC',
-            'start'         => 0,
-            'limit'         => 10
-        );
-
-        $departments = $this->UserService->getDepartments($filter_data);
-        foreach ($departments as $department) {
-            $json[] = array(
-                'department_id' => $department->GEM01,
-                'department_name' => $department->GEM02,
-            );
-        }
-
-        $sort_order = array();
-
-        foreach ($json as $key => $value) {
-            $sort_order[$key] = $value['department_name'];
-        }
-
-        array_multisort($sort_order, SORT_ASC, $json);
-
-        return response(json_encode($json))->header('Content-Type','application/json');
+        return Validator::make($data, [
+            'username' => 'required|regex:/^[\w\s\-]+$/u|min:3',
+            'name' => 'required|regex:/^[\w\s\-]+$/u|min:3',
+        ],[
+            'username.*'    => $langs->error_username,
+            'name.*'        => $langs->error_name,
+        ]);
     }
 }

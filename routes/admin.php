@@ -15,26 +15,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     Route::get('password/reset/{token}', 'Admin\Auth\AdminResetPasswordController@showResetForm')->name('password.reset');
     Route::post('password/reset', 'Admin\Auth\AdminResetPasswordController@reset');
 
-      Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => 'auth:admin'], function () {
-          
-          //動態呼叫 controller。controller_method如果是空值預設 index
-          Route::put('{controller_name}/{controller_method?}', function ($controller_name, $controller_method) {
-              $controller = app()->make('\App\Http\Controllers\Admin\User\\' . ucfirst($controller_name) . 'Controller');
-              return $controller->callAction($controller_method, $parameters = []);
-          });
-          
-          //動態呼叫 controller。controller_method如果是空值預設 index
-          Route::post('{controller_name}/{controller_method?}', function ($controller_name, $controller_method) {
-              $controller = app()->make('\App\Http\Controllers\Admin\User\\' . ucfirst($controller_name) . 'Controller');
-              return $controller->callAction($controller_method, $parameters = []);
-          });
+    Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => 'auth:admin'], function () {
 
-          //動態呼叫 controller。controller_method如果是空值預設 index
-          Route::get('{controller_name}/{controller_method?}', function ($controller_name, $controller_method = 'index') {
-              $controller = app()->make('\App\Http\Controllers\Admin\User\\' . ucfirst($controller_name) . 'Controller');
-              return $controller->callAction($controller_method, $parameters = []);
-          });
-      });
+        //Permission
+        Route::resource('permission', 'Admin\User\PermissionController');
+
+        //User
+        Route::resource('user', 'Admin\User\UserController');
+          
+        //Role
+        Route::get('role/autocomplete', 'Admin\User\RoleController@autocomplete');
+        Route::resource('role', 'Admin\User\RoleController');
+    });
 
 });
 ?>

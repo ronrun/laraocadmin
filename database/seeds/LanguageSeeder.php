@@ -16,7 +16,7 @@ class LanguageSeeder extends Seeder
 
         DB::table('languages')->insert([
             'name' => 'English',
-            'code' => 'en-gb',
+            'code' => 'en',
             'locale' => 'en_GB.UTF-8,en_GB,en-gb,english',
             'image' => 'gb.png',
             'active' => 1,
